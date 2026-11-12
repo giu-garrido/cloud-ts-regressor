@@ -1,2 +1,6 @@
 fastapi
 uvicorn[standard]
+joblib
+scikit-learn
+azure-storage-blob
+azure-identity
