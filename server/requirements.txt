@@ -4,3 +4,10 @@ joblib
 scikit-learn
 azure-storage-blob
 azure-identity
+pandas
+numpy
+scikit-learn
+cryptography
+pandas
+numpy
+python-multipart
