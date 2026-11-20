@@ -23,15 +23,14 @@ with col2:
     y_column = st.selectbox("Escolha a coluna Y", columns_list, key="secao_beta")
 
 if check_box_regressao:
+    graphic_type = "Linha (Line)"
+else:
     with col3:
         graphic_type = st.selectbox(
             "Tipo de gráfico",
             ["Dispersão (Scatter)", "Linha (Line)"],
             key="secao_grafico",
         )
-else:
-    graphic_type = "Linha (Line)"
-
 
 def ajustar_regressao_linear(x_series: pd.Series, y_series: pd.Series):
     dados = pd.DataFrame({"x": x_series, "y": y_series}).dropna()
