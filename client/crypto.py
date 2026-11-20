@@ -1,12 +1,19 @@
-import random
+from pathlib import Path
 import json
 import os
-from pathlib import Path
-
 from dotenv import load_dotenv
+import random
 
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
-TABELA = json.loads(os.environ["alpha"])
+env_path = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(dotenv_path=env_path, override=True)
+
+raw_alpha = os.getenv("alpha")
+if not raw_alpha:
+    raise RuntimeError(
+        f"Variável 'alpha' não encontrada. Verifique se o arquivo existe em: {env_path}"
+    )
+
+TABELA = json.loads(raw_alpha)
 
 SEPARADOR = ";"
 MARCADOR_NEGATIVO = "~"
@@ -14,7 +21,7 @@ random.seed(100)
 
 
 def criptografar(df):
-    df = (df.copy() * 100).astype(int)
+    df = (df.copy() * 100).round().astype(int)
 
     def criptografar_valor(valor):
         valor = int(valor)
