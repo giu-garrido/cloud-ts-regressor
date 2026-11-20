@@ -1,7 +1,8 @@
 fastapi==0.115.9
 joblib==1.5.1
 numpy==2.1.2
-opentelemetry-instrumentation-fastapi==0.54b1
+azure-identity==1.21.0
+azure-storage-blob==12.25.1
 pandas==2.2.3
 python-dotenv==1.1.0
 python-multipart==0.0.34
