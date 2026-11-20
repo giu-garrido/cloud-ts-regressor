@@ -1,14 +1,30 @@
-from pathlib import Path
-import json
 import os
-from dotenv import load_dotenv
+import json
+from pathlib import Path
+from dotenv import load_dotenv, dotenv_values
 import random
 
 env_path = Path(__file__).resolve().parent.parent / ".env"
-load_dotenv(dotenv_path=env_path, override=True)
 
+dados = dotenv_values(
+    dotenv_path=env_path,
+    encoding="utf-8"
+)
+env_path = Path(__file__).resolve().parent.parent / ".env"
+
+print("Chaves encontradas:", list(dados.keys()))
+print("Alpha encontrada:", "alpha" in dados)
+print("Arquivo existe:", env_path.exists())
+
+load_dotenv(
+    dotenv_path=env_path,
+    override=True,
+    encoding="utf-8",
+    verbose = True
+)
 raw_alpha = os.getenv("alpha")
-if not raw_alpha:
+
+if raw_alpha is None:
     raise RuntimeError(
         f"Variável 'alpha' não encontrada. Verifique se o arquivo existe em: {env_path}"
     )
