@@ -33,24 +33,6 @@ TABELA = json.loads(raw_alpha)
 
 SEPARADOR = ";"
 MARCADOR_NEGATIVO = "~"
-random.seed(100)
-
-
-def criptografar(df):
-    df = (df.copy() * 100).round().astype(int)
-
-    def criptografar_valor(valor):
-        valor = int(valor)
-        sinal = f"{MARCADOR_NEGATIVO}{SEPARADOR}" if valor < 0 else ""
-        hexadecimal = format(abs(valor), "X")
-        simbolos = (
-            random.choice(TABELA[digito])
-            for digito in hexadecimal
-        )
-        return sinal + SEPARADOR.join(simbolos)
-
-    return df.apply(lambda coluna: coluna.map(criptografar_valor))
-
 
 def descriptografar(df):
     def descriptografar_valor(valor):
