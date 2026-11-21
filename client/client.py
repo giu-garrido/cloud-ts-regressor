@@ -11,7 +11,7 @@ import crypto as cp
 env_path = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
-API_URL = os.getenv("API_URL", " http://127.0.0.1:8501").rstrip("/")
+API_URL = os.getenv("API_URL", " http://127.0.0.1:8000").rstrip("/")
 
 
 def enviar_para_rota(rota: str, df: pd.DataFrame) -> pd.DataFrame:

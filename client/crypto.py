@@ -11,6 +11,7 @@ env_path = Path(__file__).resolve().parent.parent / ".env"
 dados = dotenv_values(
     dotenv_path=env_path,
     encoding="utf-8"
+)
 
 print("Chaves encontradas:", list(dados.keys()))
 print("Alpha encontrada:", "alpha" in dados)
@@ -42,7 +43,7 @@ def criptografar(df: pd.DataFrame) -> pd.DataFrame:
 
         centavos = int(round(float(valor) * 100))
         sinal = f"{MARCADOR_NEGATIVO}{SEPARADOR}" if centavos < 0 else ""
-        hexadecimal = format(abs(centavos), "X")
+        hexadecimal = format(abs(centavos), "x")
         simbolos = (random.choice(TABELA[digito]) for digito in hexadecimal)
         return sinal + SEPARADOR.join(simbolos)
 
