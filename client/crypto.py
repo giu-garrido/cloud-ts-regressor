@@ -18,8 +18,8 @@ load_dotenv(
     dotenv_path=env_path,
     override=True,
     encoding="utf-8",
-    verbose = True
-) 
+    verbose=True
+)
 raw_alpha = os.getenv("alpha")
 
 if raw_alpha is None:
@@ -54,9 +54,20 @@ SEPARADOR = ";"
 MARCADOR_NEGATIVO = "~"
 MARCADOR_NAN = "__NaN__"
 
+
+def _buscar_opcoes(digito_hex: str):
+    if digito_hex in TABELA:
+        return TABELA[digito_hex]
+    if digito_hex.upper() in TABELA:
+        return TABELA[digito_hex.upper()]
+    if digito_hex.lower() in TABELA:
+        return TABELA[digito_hex.lower()]
+    raise KeyError(f"Chave hexadecimal {digito_hex!r} não encontrada em 'alpha'.")
+
+
 def criptografar(df: pd.DataFrame) -> pd.DataFrame:
     def criptografar_valor(valor):
-        if pd.isna(valor) or np.isinf(float(valor)):
+        if valor is None or pd.isna(valor):
             return MARCADOR_NAN
 
         centavos = int(round(round(valor, 2) * 100))
@@ -65,14 +76,16 @@ def criptografar(df: pd.DataFrame) -> pd.DataFrame:
         simbolos = [random.choice(TABELA[digito]) for digito in hexadecimal]
         return sinal + SEPARADOR.join(simbolos)
 
-    return df.apply(lambda coluna: coluna.map(criptografar_valor))
+    return df.copy().apply(lambda coluna: coluna.map(criptografar_valor))
+
 
 def decriptografar(df: pd.DataFrame) -> pd.DataFrame:
     def decriptografar_valor(valor):
         if pd.isna(valor) or str(valor) == MARCADOR_NAN:
             return np.nan
 
-        partes = str(valor).split(SEPARADOR)
+        texto_valor = str(valor)
+        partes = texto_valor.split(SEPARADOR)
         sinal = -1 if partes[0] == MARCADOR_NEGATIVO else 1
 
         if sinal < 0:
@@ -85,6 +98,9 @@ def decriptografar(df: pd.DataFrame) -> pd.DataFrame:
                 for digito, opcoes in TABELA.items()
                 if simbolo in opcoes
             ]
+            if len(correspondencias) == 0:
+                # Se não bateu com nenhum símbolo cifrado, deixa como texto original
+                return texto_valor
             if len(correspondencias) != 1:
                 raise ValueError(f"Símbolo desconhecido ou ambíguo: {simbolo!r}")
             digitos.append(correspondencias[0])

@@ -24,7 +24,7 @@ import json
 app = FastAPI(
     title="API de integração para model de regressão",
     description="Para receber uma predição, jogue o arquivo CSV na parte de upload e escreve o nome da coluna alvo.", #<!>
-    version="0.0.3" # <!>
+    version="0.1.0" # <!>
 )
 
 
@@ -52,7 +52,6 @@ async def ler_csv(arquivo: UploadFile, cifrado: bool = False) -> pd.DataFrame:
         raise HTTPException(status_code=400, detail=f"Erro ao ler o CSV: {e}")
 
     if cifrado:
-        # <!> alinhar com o grupo o formato cifrado na entrada
         try:
             df = cp.decriptografar(df)
         except Exception as e:
@@ -193,7 +192,16 @@ async def predict(
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Coluna '{coluna_alvo}' inválida para calcular métricas: {e}")
 
+<<<<<<< HEAD
     # <!> Se o cliente precisar de saída cifrada, combinar função de cifrar no cp.py
+=======
+    if cifrado:
+        try:
+            df_resultado = crypto.criptografar(df_resultado)
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Erro ao cifrar resposta: {e}")
+
+>>>>>>> 24766fa (cifrando csv de saida do /predic)
     buffer_csv = io.StringIO()
     df_resultado.to_csv(buffer_csv, index=False)
     buffer_csv.seek(0)
