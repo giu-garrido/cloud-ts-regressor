@@ -1,7 +1,7 @@
 import io
 import os
 from pathlib import Path
-
+import matplotlib.pyplot as plt
 from dotenv import load_dotenv
 import pandas as pd
 import requests
@@ -164,6 +164,78 @@ if "ultima_resposta" in st.session_state:
             file_name=f"resultado_{rota_salva}.csv",
             mime="text/csv",
         )
+
+        # --- Seção de Gráficos (Matplotlib) ---
+        st.subheader("Visualizações")
+
+        colunas_numericas = list(df_salvo.select_dtypes(include="number").columns)
+        if isinstance(resposta_salva, dict):
+            metricas_esp = resposta_salva.get("metricas_esperadas")
+            metricas_rea = resposta_salva.get("metricas_reais")
+            if metricas_esp:
+                st.caption("Métricas esperadas (validação/teste do treino)")
+                st.json(metricas_esp)
+            if metricas_rea:
+                st.caption("Métricas reais (avaliação do teste)")
+                st.json(metricas_rea)
+
+        if "predicao" in df_salvo.columns:
+            candidatas_alvo = [c for c in ["time", "target", "y"] if c in df_salvo.columns]
+            coluna_alvo_real = candidatas_alvo[0] if candidatas_alvo else None
+
+            fig, ax = plt.subplots(figsize=(10, 4))
+            x = df_salvo.index
+
+            if coluna_alvo_real and pd.api.types.is_numeric_dtype(df_salvo[coluna_alvo_real]):
+                ax.plot(x, df_salvo[coluna_alvo_real], label=f"Real ({coluna_alvo_real})")
+                ax.plot(x, df_salvo["predicao"], label="Predição", linestyle="--")
+                ax.set_title("Real vs. Predição")
+                ax.set_xlabel("Observação / Índice")
+                ax.set_ylabel("Valor")
+                ax.legend()
+                ax.grid(True, alpha=0.3)
+                st.pyplot(fig)
+                plt.close(fig)
+
+                fig_err, ax_err = plt.subplots(figsize=(10, 3))
+                erro = df_salvo[coluna_alvo_real] - df_salvo["predicao"]
+                ax_err.plot(x, erro, label="Erro (real - predicao)")
+                ax_err.axhline(0, linestyle=":", linewidth=1)
+                ax_err.set_title("Erro Residual")
+                ax_err.set_xlabel("Observação / Índice")
+                ax_err.set_ylabel("Erro")
+                ax_err.legend()
+                ax_err.grid(True, alpha=0.3)
+                st.pyplot(fig_err)
+                plt.close(fig_err)
+            else:
+                ax.plot(x, df_salvo["predicao"], label="Predição")
+                ax.set_title("Curva de Predições")
+                ax.set_xlabel("Observação / Índice")
+                ax.set_ylabel("Predição")
+                ax.legend()
+                ax.grid(True, alpha=0.3)
+                st.pyplot(fig)
+                plt.close(fig)
+
+        elif colunas_numericas:
+            opcoes_plot = st.multiselect(
+                "Selecione colunas para plotar juntas",
+                colunas_numericas,
+                default=colunas_numericas[: min(3, len(colunas_numericas))],
+            )
+            if opcoes_plot:
+                fig, ax = plt.subplots(figsize=(10, 4))
+                x = df_salvo.index
+                for col in opcoes_plot:
+                    ax.plot(x, df_salvo[col], label=col)
+                ax.set_title("Séries Numéricas Selecionadas")
+                ax.set_xlabel("Observação / Índice")
+                ax.set_ylabel("Valor")
+                ax.legend()
+                ax.grid(True, alpha=0.3)
+                st.pyplot(fig)
+                plt.close(fig)
     else:
         st.subheader("Resposta da API")
         st.json(resposta_salva)
