@@ -3,14 +3,14 @@ import json
 from pathlib import Path
 from dotenv import load_dotenv, dotenv_values
 import random
+import pandas as pd
+import numpy as np
 
 env_path = Path(__file__).resolve().parent.parent / ".env"
 
 dados = dotenv_values(
     dotenv_path=env_path,
     encoding="utf-8"
-)
-env_path = Path(__file__).resolve().parent.parent / ".env"
 
 print("Chaves encontradas:", list(dados.keys()))
 print("Alpha encontrada:", "alpha" in dados)
@@ -33,18 +33,17 @@ TABELA = json.loads(raw_alpha)
 
 SEPARADOR = ";"
 MARCADOR_NEGATIVO = "~"
+MARCADOR_NAN = "__NaN__"
 
-def criptografar(df):
-    df = (df.copy() * 100).round().astype(int)
-
+def criptografar(df: pd.DataFrame) -> pd.DataFrame:
     def criptografar_valor(valor):
-        valor = int(valor)
-        sinal = f"{MARCADOR_NEGATIVO}{SEPARADOR}" if valor < 0 else ""
-        hexadecimal = format(abs(valor), "X")
-        simbolos = (
-            random.choice(TABELA[digito])
-            for digito in hexadecimal
-        )
+        if pd.isna(valor) or np.isinf(float(valor)):
+            return MARCADOR_NAN
+
+        centavos = int(round(float(valor) * 100))
+        sinal = f"{MARCADOR_NEGATIVO}{SEPARADOR}" if centavos < 0 else ""
+        hexadecimal = format(abs(centavos), "X")
+        simbolos = (random.choice(TABELA[digito]) for digito in hexadecimal)
         return sinal + SEPARADOR.join(simbolos)
 
     return df.apply(lambda coluna: coluna.map(criptografar_valor))

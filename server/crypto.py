@@ -3,6 +3,8 @@ import json
 from pathlib import Path
 from dotenv import load_dotenv, dotenv_values
 import random
+import pandas as pd
+import numpy as np
 
 env_path = Path(__file__).resolve().parent.parent / ".env"
 
@@ -10,7 +12,6 @@ dados = dotenv_values(
     dotenv_path=env_path,
     encoding="utf-8"
 )
-env_path = Path(__file__).resolve().parent.parent / ".env"
 
 print("Chaves encontradas:", list(dados.keys()))
 print("Alpha encontrada:", "alpha" in dados)
@@ -33,9 +34,13 @@ TABELA = json.loads(raw_alpha)
 
 SEPARADOR = ";"
 MARCADOR_NEGATIVO = "~"
+MARCADOR_NAN = "__NaN__"
 
-def descriptografar(df):
+def descriptografar(df: pd.DataFrame) -> pd.DataFrame:
     def descriptografar_valor(valor):
+        if pd.isna(valor) or str(valor) == MARCADOR_NAN:
+            return np.nan
+
         partes = str(valor).split(SEPARADOR)
         sinal = -1 if partes[0] == MARCADOR_NEGATIVO else 1
 
@@ -55,6 +60,4 @@ def descriptografar(df):
 
         return sinal * int("".join(digitos), 16) / 100
 
-    return df.copy().apply(
-        lambda coluna: coluna.map(descriptografar_valor)
-    )
+    return df.copy().apply(lambda coluna: coluna.map(descriptografar_valor))
