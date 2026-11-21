@@ -13,7 +13,9 @@ import crypto as cp
 env_path = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
-API_URL = ("http://host.docker.internal:8000").strip().strip('"').strip("'").rstrip("/")
+API_URL = (
+    os.getenv("API_URL", "http://host.docker.internal:8000").strip().strip('"').strip("'").rstrip("/")
+)
 
 def df_para_csv_bytes(df: pd.DataFrame, nome_arquivo: str) -> tuple[str, bytes, str]:
     buffer = io.StringIO()
