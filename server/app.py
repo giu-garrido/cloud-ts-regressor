@@ -8,6 +8,7 @@ import crypto as cp
 import pandas as pd
 import io
 import numpy as np
+import json
 
 # IMPORTANTE 
 # para o codigo ficar mais entendivel, coloquei um traçado que separa os tipoes de requisições
@@ -199,9 +200,9 @@ async def predict(
 
     headers = {"Content-Disposition": 'attachment; filename="predicoes.csv"'}
     if metricas_esperadas is not None:
-        headers["X-Metricas-Esperadas"] = str(metricas_esperadas)
+        headers["X-Metricas-Esperadas"] = json.dumps(metricas_esperadas)
     if metricas_reais is not None:
-        headers["X-Metricas-Reais"] = str(metricas_reais)
+        headers["X-Metricas-Reais"] = json.dumps(metricas_reais)
 
     return StreamingResponse(
         iter([buffer_csv.getvalue()]),

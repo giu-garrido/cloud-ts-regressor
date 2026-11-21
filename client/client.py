@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import pandas as pd
 import requests
 import streamlit as st
+import json
 
 import crypto as cp
 
@@ -61,8 +62,8 @@ def enviar_predict(df_features: pd.DataFrame) -> dict:
     if "text/csv" in content_type:
         return {
             "csv_texto": response.text,
-            "metricas_esperadas": response.headers.get("X-Metricas-Esperadas"),
-            "metricas_reais": response.headers.get("X-Metricas-Reais"),
+            "metricas_esperadas": json.loads(response.headers.get("X-Metricas-Esperadas", "null")),
+            "metricas_reais": json.loads(response.headers.get("X-Metricas-Reais", "null")),
         }
     return response.json()
 
