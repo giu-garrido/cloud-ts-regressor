@@ -45,6 +45,11 @@ except json.JSONDecodeError:
 if not isinstance(TABELA, dict):
     raise RuntimeError(f"'alpha' deveria ser um dicionário/objeto, mas virou {type(TABELA).__name__}.")
 
+TABELA = {str(k).upper(): v for k, v in TABELA.items()}
+
+if not isinstance(TABELA, dict):
+    raise RuntimeError(f"'alpha' deveria ser um dicionário/objeto, mas virou {type(TABELA).__name__}.")
+
 SEPARADOR = ";"
 MARCADOR_NEGATIVO = "~"
 MARCADOR_NAN = "__NaN__"
@@ -57,7 +62,7 @@ def criptografar(df: pd.DataFrame) -> pd.DataFrame:
         centavos = int(round(round(valor, 2) * 100))
         sinal = f"{MARCADOR_NEGATIVO}{SEPARADOR}" if centavos < 0 else ""
         hexadecimal = format(abs(centavos), "X")
-        simbolos = (random.choice(TABELA[digito]) for digito in hexadecimal)
+        simbolos = [random.choice(TABELA[digito]) for digito in hexadecimal]
         return sinal + SEPARADOR.join(simbolos)
 
     return df.apply(lambda coluna: coluna.map(criptografar_valor))
