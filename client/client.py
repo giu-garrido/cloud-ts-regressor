@@ -73,18 +73,18 @@ def decifrar_resposta(dados_resposta) -> pd.DataFrame | None:
     # Caso 1: API retorna {"predicoes": [...]} (cifradas ou numéricas)
     if "predicoes" in dados_resposta:
         df_pred = pd.DataFrame({"predicao": dados_resposta["predicoes"]})
-        return cp.descriptografar(df_pred)
+        return cp.decriptografar(df_pred)
 
     # Caso 2: API retorna estrutura tabular {"columns": [...], "records": [...]}
     if "records" in dados_resposta:
         colunas = dados_resposta.get("columns")
         df_cifrado = pd.DataFrame(dados_resposta["records"], columns=colunas)
-        return cp.descriptografar(df_cifrado)
+        return cp.decriptografar(df_cifrado)
     
     if "csv_texto" in dados_resposta:
         df_csv = pd.read_csv(io.StringIO(dados_resposta["csv_texto"]))
         try:
-            return cp.descriptografar(df_csv)
+            return cp.decriptografar(df_csv)
         except Exception:
             # Se o /predict devolveu o CSV já em valores numéricos/texto sem cifrar
             return df_csv
