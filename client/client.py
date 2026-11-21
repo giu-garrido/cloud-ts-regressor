@@ -12,12 +12,8 @@ import crypto as cp
 env_path = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
-<<<<<<< HEAD
-API_URL = os.getenv("API_URL", " http://127.0.0.1:8000").rstrip("/")
-=======
-API_URL = os.getenv("API_URL", "http://server:8000").strip().rstrip("/")
->>>>>>> e85b58dc1b47c4292cc1eb6609c198a5c911492b
 
+API_URL = os.getenv("API_URL", " http://127.0.0.1:8000").rstrip("/")
 
 def df_para_csv_bytes(df: pd.DataFrame, nome_arquivo: str) -> tuple[str, bytes, str]:
     buffer = io.StringIO()
@@ -31,7 +27,8 @@ def enviar_train(df_treino: pd.DataFrame, coluna_alvo: str) -> dict:
 
     df_cifrado = cp.criptografar(df_treino)
     files = {"arquivo": df_para_csv_bytes(df_cifrado, "treino_cifrado.csv")}
-    data = {"coluna_alvo": coluna_alvo}
+    data = {"coluna_alvo": coluna_alvo,
+            "cifrado": "true",}
 
     response = requests.post(
         f"{API_URL}/train",
@@ -49,15 +46,25 @@ def enviar_predict(df_features: pd.DataFrame) -> dict:
 
     df_cifrado = cp.criptografar(df_features)
     files = {"arquivo": df_para_csv_bytes(df_cifrado, "predict_cifrado.csv")}
+    data = {"cifrado": "true"}
 
     response = requests.post(
         f"{API_URL}/predict",
         files=files,
+        data=data,
         timeout=120,
     )
-    response.raise_for_status()
-    return response.json()
+    if not response.ok:
+        raise RuntimeError(f"Erro {response.status_code} no /predict: {response.text}")
 
+    content_type = response.headers.get("content-type", "")
+    if "text/csv" in content_type:
+        return {
+            "csv_texto": response.text,
+            "metricas_esperadas": response.headers.get("X-Metricas-Esperadas"),
+            "metricas_reais": response.headers.get("X-Metricas-Reais"),
+        }
+    return response.json()
 
 def decifrar_resposta(dados_resposta) -> pd.DataFrame | None:
     if not isinstance(dados_resposta, dict):
@@ -73,7 +80,14 @@ def decifrar_resposta(dados_resposta) -> pd.DataFrame | None:
         colunas = dados_resposta.get("columns")
         df_cifrado = pd.DataFrame(dados_resposta["records"], columns=colunas)
         return cp.descriptografar(df_cifrado)
-
+    
+    if "csv_texto" in dados_resposta:
+        df_csv = pd.read_csv(io.StringIO(dados_resposta["csv_texto"]))
+        try:
+            return cp.descriptografar(df_csv)
+        except Exception:
+            # Se o /predict devolveu o CSV já em valores numéricos/texto sem cifrar
+            return df_csv
     return None
 
 

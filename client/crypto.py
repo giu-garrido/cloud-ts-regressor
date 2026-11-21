@@ -13,13 +13,12 @@ dados = dotenv_values(
     dotenv_path=env_path,
     encoding="utf-8"
 )
-<<<<<<< HEAD
+
 
 print("Chaves encontradas:", list(dados.keys()))
 print("Alpha encontrada:", "alpha" in dados)
 print("Arquivo existe:", env_path.exists())
-=======
->>>>>>> e85b58dc1b47c4292cc1eb6609c198a5c911492b
+
 
 load_dotenv(
     dotenv_path=env_path,
