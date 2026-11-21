@@ -4,7 +4,7 @@ from sklearn.preprocessing import StandardScaler
 import model
 import dotenv
 import storage
-import crypto
+import crypto as cp
 import pandas as pd
 import io
 import numpy as np
@@ -53,9 +53,9 @@ async def ler_csv(arquivo: UploadFile, cifrado: bool = False) -> pd.DataFrame:
     if cifrado:
         # <!> alinhar com o grupo o formato cifrado na entrada
         try:
-            df = crypto.descriptografar(df)
+            df = cp.decriptografar(df)
         except Exception as e:
-            raise HTTPException(status_code=400, detail=f"Erro ao descriptografar CSV: {e}")
+            raise HTTPException(status_code=400, detail=f"Erro ao decriptografar CSV: {e}")
 
     return df
 
@@ -192,7 +192,7 @@ async def predict(
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Coluna '{coluna_alvo}' inválida para calcular métricas: {e}")
 
-    # <!> Se o cliente precisar de saída cifrada, combinar função de cifrar no crypto.py
+    # <!> Se o cliente precisar de saída cifrada, combinar função de cifrar no cp.py
     buffer_csv = io.StringIO()
     df_resultado.to_csv(buffer_csv, index=False)
     buffer_csv.seek(0)
