@@ -90,6 +90,13 @@ def decifrar_resposta(dados_resposta) -> pd.DataFrame | None:
             return df_csv
     return None
 
+def resetar_modelo() -> dict:
+    if not API_URL:
+        raise RuntimeError("Variável de ambiente API_URL não configurada no .env.")
+
+    response = requests.post(f"{API_URL}/reset", timeout=60)
+    response.raise_for_status()
+    return response.json()
 
 st.title("Cliente - Treino e Predição")
 
@@ -127,6 +134,18 @@ if arquivo_csv is not None:
             st.error(f"Erro na comunicação com a API: {exc}")
         except Exception as exc:
             st.error(f"Erro ao processar os dados: {exc}")
+
+if st.button("Resetar modelo"):
+    try:
+        with st.spinner("Resetando modelo na API..."):
+            res_reset = resetar_modelo()
+        for chave in ("ultima_resposta", "ultimo_df_decifrado", "ultima_rota"):
+            st.session_state.pop(chave, None)
+        st.success(res_reset.get("mensagem", "Modelo resetado com sucesso!"))
+    except requests.RequestException as exc:
+        st.error(f"Erro ao resetar o modelo: {exc}")
+    except Exception as exc:
+        st.error(f"Erro inesperado ao resetar: {exc}")
 
 if "ultima_resposta" in st.session_state:
     resposta_salva = st.session_state["ultima_resposta"]

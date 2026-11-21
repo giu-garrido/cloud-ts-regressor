@@ -54,7 +54,7 @@ def criptografar(df: pd.DataFrame) -> pd.DataFrame:
         if pd.isna(valor) or np.isinf(float(valor)):
             return MARCADOR_NAN
 
-        centavos = int(round(float(valor) * 100))
+        centavos = int(round(round(valor, 2) * 100))
         sinal = f"{MARCADOR_NEGATIVO}{SEPARADOR}" if centavos < 0 else ""
         hexadecimal = format(abs(centavos), "X")
         simbolos = (random.choice(TABELA[digito]) for digito in hexadecimal)
@@ -62,8 +62,8 @@ def criptografar(df: pd.DataFrame) -> pd.DataFrame:
 
     return df.apply(lambda coluna: coluna.map(criptografar_valor))
 
-def descriptografar(df: pd.DataFrame) -> pd.DataFrame:
-    def descriptografar_valor(valor):
+def decriptografar(df: pd.DataFrame) -> pd.DataFrame:
+    def decriptografar_valor(valor):
         if pd.isna(valor) or str(valor) == MARCADOR_NAN:
             return np.nan
 
@@ -86,4 +86,4 @@ def descriptografar(df: pd.DataFrame) -> pd.DataFrame:
 
         return sinal * int("".join(digitos), 16) / 100
 
-    return df.copy().apply(lambda coluna: coluna.map(descriptografar_valor))
+    return df.copy().apply(lambda coluna: coluna.map(decriptografar_valor))
