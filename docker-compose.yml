@@ -1,0 +1,23 @@
+services:
+  api:
+    build: ./server
+    image: cloud-ts-api:local
+    ports:
+      - "8001:8000"
+    env_file: .env
+    environment:
+      STORAGE_BACKEND: local
+      LOCAL_MODEL_DIR: /app/data/modelo
+    volumes:
+      - ./data:/app/data
+
+  client:
+    build: ./client
+    image: cloud-ts-client:local
+    ports:
+      - "8501:8501"
+    env_file: .env
+    environment:
+      API_URL: http://api:8000
+    depends_on:
+      - api
