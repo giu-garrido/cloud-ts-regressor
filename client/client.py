@@ -134,7 +134,12 @@ if arquivo_csv is not None:
         if not colunas:
             st.error("O CSV enviado não possui colunas.")
             st.stop()
-        coluna_alvo = st.selectbox("Selecione a coluna alvo", colunas)
+        coluna_alvo = st.selectbox(
+            "Selecione a coluna alvo",
+            colunas,
+            index=colunas.index("time") if "time" in colunas else len(colunas) - 1,
+        )
+
 
     if st.button("Enviar para API"):
         try:
