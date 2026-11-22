@@ -165,9 +165,11 @@ Status possíveis: ✅ adotada · 🔄 em andamento · 📋 planejada · ❌ des
 - Ambos leem o `alpha` do `.env` (`env_file`). O `docker compose config` mostra `$` como `$$`; é só escape, o valor chega certo.
 - **Uso:** `docker compose up --build` e abrir `http://localhost:8501`.
 
-### D14 — Cliente publicado na Azure 📋
+### D14 — Cliente publicado na Azure ✅
 
-- **Proposta:** publicar o cliente Streamlit como segundo Container App (`cloud-ts-client`, porta 8501, `max-replicas 1`), no mesmo ambiente e com a mesma identidade, para ter um link pronto na arguição.
+- **Decisão:** o cliente Streamlit roda como segundo Container App (`cloud-ts-client`), no mesmo ambiente e com a mesma identidade, para ter um link pronto na arguição: `https://cloud-ts-client.mangobay-ca7756bd.brazilsouth.azurecontainerapps.io`.
+- **Configuração:** porta 8501, 0,5 vCPU e 1 GiB (Streamlit com matplotlib e plotly passa dos 0,5 GiB), `min-replicas 0` e `max-replicas 1` (o Streamlit guarda a sessão em memória; com duas réplicas o usuário perderia o estado).
+- **Segredo:** secret `alpha-tabela` copiado do `cloud-ts-api` pelo Cloud Shell, sem colar o JSON; `API_URL` aponta para a API.
 - **Ponto de atenção:** com o cliente na nuvem, o CSV sai do navegador em texto (protegido só por HTTPS) e é cifrado no servidor do cliente. Para mostrar a cifra saindo da própria máquina, usar o cliente local (D13).
 
 ---
@@ -180,12 +182,15 @@ Status possíveis: ✅ adotada · 🔄 em andamento · 📋 planejada · ❌ des
 | Resource Group | `rg-cloud-ts-regressor` | agrupa todos os recursos do projeto |
 | Ambiente do Container Apps | `env-cloud-ts` | tipo *express*, região `brazilsouth` |
 | Container App | `cloud-ts-api` | ingress externo, porta 8000, imagem `v3-cifra` |
+| Container App | `cloud-ts-client` | ingress externo, porta 8501, imagem `cloud-ts-client:v1` (D14) |
 | Container Registry | `ca1770811e71acr` | SKU Basic, admin desligado; único custo fixo (~US$ 5/mês) |
 | Identidade gerenciada | `id-cloud-ts` | *user-assigned*; `AcrPull` + acesso ao Storage (D07) |
 | Storage Account | `storagecloud001` | Standard_LRS; container `modelos` (D08) |
 | Log Analytics | `workspace-rgcloudtsregressor05x8` | criado automaticamente |
 
-Tags da imagem no ACR: `v1`, `v2`, `v2-oci`, `v3-cifra` (atual: com criptografia na entrada e na saída e normalização corrigida).
+Tags no ACR:
+- `cloud-ts-api`: `v1`, `v2`, `v2-oci`, `v3-cifra` (atual: com criptografia na entrada e na saída e normalização corrigida);
+- `cloud-ts-client`: `v1` (coluna alvo padrão em `time`).
 
 Resource providers registrados na assinatura: `Microsoft.App`, `Microsoft.OperationalInsights`, `Microsoft.ContainerRegistry`.
 
@@ -269,6 +274,7 @@ API_URL=https://cloud-ts-api.mangobay-ca7756bd.brazilsouth.azurecontainerapps.io
 - [x] Cliente Streamlit com métricas e gráficos
 - [x] Docker Compose funcionando localmente como plano B (D13)
 - [x] Imagem `v3-cifra` publicada e teste ponta a ponta cifrado na Azure (21/11)
-- [ ] Publicar o cliente na Azure (D14)
+- [x] Seletor de coluna alvo do cliente começando em `time`
+- [x] Cliente publicado na Azure (D14)
 - [ ] Merge `dev` → `main` via PR
 - [ ] Ensaio da arguição simulando uma base nova
