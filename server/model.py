@@ -19,7 +19,7 @@ def load_data(file_path):
 def prepare_data(df, target_column):
     """
     Prepara os dados para o treinamento do modelo.
-    Separa as features e o target, normaliza os dados e divide em treino e teste.
+    Separa as features e o target e divide em treino e teste.
     """
     try:
         X = df.drop(columns=[target_column])
@@ -30,11 +30,6 @@ def prepare_data(df, target_column):
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
         X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
-
-        scaler = StandardScaler()
-        X_train = scaler.fit_transform(X_train)
-        X_test = scaler.transform(X_test)
-        X_val = scaler.transform(X_val)
 
         return X_train, X_test, y_train, y_test, X_val, y_val
     
@@ -150,9 +145,6 @@ class Regressor:
         """
         Faz a previsão com base nos dados de entrada.
         """
-
-        scaler = StandardScaler()
-        X = scaler.fit_transform(X)
 
         if weights is None:
             weights = self.weights

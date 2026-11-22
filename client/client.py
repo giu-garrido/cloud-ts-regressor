@@ -24,12 +24,6 @@ def _endpoint(rota: str) -> str:
         raise RuntimeError("Variável de ambiente API_URL não configurada.")
     return f"{API_URL}{rota}"
 
-<<<<<<< HEAD
-=======
-API_URL = os.getenv("API_URL", "http://127.0.0.1:8000").strip(" /")
-
->>>>>>> 24766fa (cifrando csv de saida do /predic)
-
 def df_para_csv_bytes(df: pd.DataFrame, nome_arquivo: str) -> tuple[str, bytes, str]:
     buffer = io.StringIO()
     df.to_csv(buffer, index=False)
@@ -38,15 +32,7 @@ def df_para_csv_bytes(df: pd.DataFrame, nome_arquivo: str) -> tuple[str, bytes, 
 
 def enviar_train(df_treino: pd.DataFrame, coluna_alvo: str) -> dict:
     df_cifrado = cp.criptografar(df_treino)
-<<<<<<< HEAD
-=======
-    files = {"arquivo": df_para_csv_bytes(df_cifrado, "treino_cifrado.csv")}
-    data = {
-        "coluna_alvo": coluna_alvo,
-        "cifrado": "true",
-    }
 
->>>>>>> 24766fa (cifrando csv de saida do /predic)
     response = requests.post(
         _endpoint("/train"),
         files={"arquivo": df_para_csv_bytes(df_cifrado, "treino_cifrado.csv")},
@@ -81,33 +67,22 @@ def decifrar_resposta(dados_resposta) -> pd.DataFrame | None:
     if not isinstance(dados_resposta, dict):
         return None
 
-<<<<<<< HEAD
-=======
     # Caso 1: API retorna {"predicoes": [...]} cifradas
->>>>>>> 24766fa (cifrando csv de saida do /predic)
+
     if "predicoes" in dados_resposta:
         return cp.decriptografar(pd.DataFrame({"predicao": dados_resposta["predicoes"]}))
-
-<<<<<<< HEAD
-    if "records" in dados_resposta:
-        df_cifrado = pd.DataFrame(dados_resposta["records"], columns=dados_resposta.get("columns"))
-        return cp.decriptografar(df_cifrado)
-
-    if "csv_texto" in dados_resposta:
-        df_csv = pd.read_csv(io.StringIO(dados_resposta["csv_texto"]))
-        return cp.decriptografar(df_csv)
-=======
+    
     # Caso 2: API retorna estrutura tabular {"columns": [...], "records": [...]} cifrada
     if "records" in dados_resposta:
         colunas = dados_resposta.get("columns")
         df_cifrado = pd.DataFrame(dados_resposta["records"], columns=colunas)
-        return cp.descriptografar(df_cifrado)
+        return cp.decriptografar(df_cifrado)
 
     # Caso 3: API retorna CSV cifrado em texto
     if "csv_texto" in dados_resposta:
         df_cifrado = pd.read_csv(io.StringIO(dados_resposta["csv_texto"]))
-        return cp.descriptografar(df_cifrado)
->>>>>>> 24766fa (cifrando csv de saida do /predic)
+        return cp.decriptografar(df_cifrado)
+
 
     return None
 

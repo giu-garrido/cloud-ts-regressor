@@ -69,13 +69,6 @@ def criptografar(df: pd.DataFrame) -> pd.DataFrame:
     def criptografar_valor(valor):
         if valor is None or pd.isna(valor):
             return MARCADOR_NAN
-
-<<<<<<< HEAD
-        centavos = int(round(round(valor, 2) * 100))
-        sinal = f"{MARCADOR_NEGATIVO}{SEPARADOR}" if centavos < 0 else ""
-        hexadecimal = format(abs(centavos), "X")
-        simbolos = [random.choice(TABELA[digito]) for digito in hexadecimal]
-=======
         try:
             num = float(valor)
         except (ValueError, TypeError):
@@ -88,7 +81,6 @@ def criptografar(df: pd.DataFrame) -> pd.DataFrame:
         sinal = f"{MARCADOR_NEGATIVO}{SEPARADOR}" if centavos < 0 else ""
         hexadecimal = format(abs(centavos), "X")
         simbolos = (random.choice(_buscar_opcoes(digito)) for digito in hexadecimal)
->>>>>>> 24766fa (cifrando csv de saida do /predic)
         return sinal + SEPARADOR.join(simbolos)
 
     return df.copy().apply(lambda coluna: coluna.map(criptografar_valor))
@@ -122,9 +114,5 @@ def decriptografar(df: pd.DataFrame) -> pd.DataFrame:
 
         return sinal * int("".join(digitos), 16) / 100
 
-<<<<<<< HEAD
-    return df.copy().apply(lambda coluna: coluna.map(decriptografar_valor))
-=======
-    return df.copy().apply(lambda coluna: coluna.map(descriptografar_valor))
 
->>>>>>> 24766fa (cifrando csv de saida do /predic)
+    return df.copy().apply(lambda coluna: coluna.map(decriptografar_valor))

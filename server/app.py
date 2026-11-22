@@ -192,16 +192,12 @@ async def predict(
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Coluna '{coluna_alvo}' inválida para calcular métricas: {e}")
 
-<<<<<<< HEAD
-    # <!> Se o cliente precisar de saída cifrada, combinar função de cifrar no cp.py
-=======
     if cifrado:
         try:
-            df_resultado = crypto.criptografar(df_resultado)
+            df_resultado = cp.criptografar(df_resultado)
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Erro ao cifrar resposta: {e}")
 
->>>>>>> 24766fa (cifrando csv de saida do /predic)
     buffer_csv = io.StringIO()
     df_resultado.to_csv(buffer_csv, index=False)
     buffer_csv.seek(0)
