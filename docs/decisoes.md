@@ -57,7 +57,7 @@ Endpoints:
 | `GET /status` | informa se há modelo treinado e as métricas esperadas |
 | `GET /health` | verificação de saúde do container |
 
-URL pública: `https://cloud-ts-api.mangobay-ca7756bd.brazilsouth.azurecontainerapps.io` (documentação interativa em `/docs`).
+URL pública: ver no portal da Azure (Container App `cloud-ts-api` → Visão geral → URL do aplicativo). Documentação interativa em `/docs`.
 
 ---
 
@@ -167,7 +167,7 @@ Status possíveis: ✅ adotada · 🔄 em andamento · 📋 planejada · ❌ des
 
 ### D14 — Cliente publicado na Azure ✅
 
-- **Decisão:** o cliente Streamlit roda como segundo Container App (`cloud-ts-client`), no mesmo ambiente e com a mesma identidade, para ter um link pronto na arguição: `https://cloud-ts-client.mangobay-ca7756bd.brazilsouth.azurecontainerapps.io`.
+- **Decisão:** o cliente Streamlit roda como segundo Container App (`cloud-ts-client`), no mesmo ambiente e com a mesma identidade, para ter um link pronto na arguição (URL no portal da Azure, em `cloud-ts-client` → Visão geral).
 - **Configuração:** porta 8501, 0,5 vCPU e 1 GiB (Streamlit com matplotlib e plotly passa dos 0,5 GiB), `min-replicas 0` e `max-replicas 1` (o Streamlit guarda a sessão em memória; com duas réplicas o usuário perderia o estado).
 - **Segredo:** secret `alpha-tabela` copiado do `cloud-ts-api` pelo Cloud Shell, sem colar o JSON; `API_URL` aponta para a API.
 - **Ponto de atenção:** com o cliente na nuvem, o CSV sai do navegador em texto (protegido só por HTTPS) e é cifrado no servidor do cliente. Para mostrar a cifra saindo da própria máquina, usar o cliente local (D13).
@@ -259,7 +259,7 @@ Rodar o cliente local apontando para a Azure:
 
 ```bash
 cd client
-API_URL=https://cloud-ts-api.mangobay-ca7756bd.brazilsouth.azurecontainerapps.io streamlit run client.py
+API_URL=<URL da cloud-ts-api> streamlit run client.py
 ```
 
 ---
