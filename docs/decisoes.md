@@ -2,7 +2,7 @@
 
 Este documento registra as escolhas de arquitetura, ferramentas e infraestrutura do projeto, com o motivo de cada uma e as alternativas descartadas. Serve de referência para o grupo e de apoio para a arguição.
 
-**Última atualização:** 21/11/2026
+**Última atualização:** 23/11/2026
 **Entrega:** 23/11/2026, 23:30 (arguição no mesmo dia, com as bases de teste e aplicação entregues na hora)
 
 ---
@@ -276,5 +276,4 @@ API_URL=<URL da cloud-ts-api> streamlit run client.py
 - [x] Imagem `v3-cifra` publicada e teste ponta a ponta cifrado na Azure (21/11)
 - [x] Seletor de coluna alvo do cliente começando em `time`
 - [x] Cliente publicado na Azure (D14)
-- [ ] Merge `dev` → `main` via PR
-- [ ] Ensaio da arguição simulando uma base nova
+- [x] Merge `dev` → `main` via PR (#2)
