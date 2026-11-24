@@ -146,6 +146,9 @@ class Regressor:
         Faz a previsão com base nos dados de entrada.
         """
 
+        scaler = StandardScaler()
+        X = scaler.fit_transform(X)
+
         if weights is None:
             weights = self.weights
         if bias is None:
